@@ -15,7 +15,7 @@ app.use(json());
 app.use(cookieSession({
   signed: false,
   secure: process.env.NODE_ENV !== 'test',
-
+  maxAge: 1000 * 60 * 10 // 10 mins
 }))
 
 app.use(currentUserRouter);
