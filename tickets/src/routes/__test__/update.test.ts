@@ -2,6 +2,7 @@ import request from 'supertest';
 import { app } from '../../app';
 import mongoose from 'mongoose';
 import { natsWrapper } from '../../nats-wrapper';
+import { Ticket } from '../../models/tickets';
 
 it('returns a 404 if the provided id does not exist', async () => {
   const id = new mongoose.Types.ObjectId().toHexString();
@@ -109,6 +110,7 @@ it('updates the ticket provided the valid input', async () => {
 it('publishes an event', async () => {
   const cookie = global.signin();
 
+  // Create ticket
   const response = await request(app)
     .post('/api/tickets')
     .set('Cookie', cookie)
@@ -117,6 +119,7 @@ it('publishes an event', async () => {
       price: 20,
     });
   
+  // Update ticket
   await request(app)
     .put(`/api/tickets/${response.body.id}`)
     .set('Cookie', cookie)
@@ -127,3 +130,32 @@ it('publishes an event', async () => {
     .expect(200);
   expect(natsWrapper.client.publish).toHaveBeenCalled();
 })
+
+it('', async () => {
+  const cookie = global.signin();
+
+  // Create ticket
+  const response = await request(app)
+    .post('/api/tickets')
+    .set('Cookie', cookie)
+    .send({
+      title: 'asdasda',
+      price: 20,
+    });
+  
+  const ticket = await Ticket.findById(response.body.id);
+  ticket!.set({
+    orderId: mongoose.Types.ObjectId().toHexString(),
+  });
+  await ticket!.save();
+  
+  // Update ticket
+  await request(app)
+    .put(`/api/tickets/${response.body.id}`)
+    .set('Cookie', cookie)
+    .send({
+      title: 'asdasdasd',
+      price: 200,
+    })
+    .expect(400);
+});
