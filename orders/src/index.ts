@@ -3,6 +3,7 @@ import { app } from './app';
 import { natsWrapper } from './nats-wrapper';
 import { TicketCreatedListener } from './events/listeners/ticket-created-listener';
 import { TicketUpdatedListener } from './events/listeners/ticket-updated-listener';
+import { ExpirationCompletedListener } from './events/listeners/expiration-completed-listener';
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -31,8 +32,10 @@ const start = async () => {
     process.on('SIGINT', () => natsWrapper.client.close());
     process.on('SIGNTERM', () => natsWrapper.client.close());
 
+    // Add NATS listeners
     new TicketCreatedListener(natsWrapper.client).listen();
     new TicketUpdatedListener(natsWrapper.client).listen();
+    new ExpirationCompletedListener(natsWrapper.client).listen();
 
     // connect to MONGODB server
     await mongoose.connect(process.env.MONGO_URI, {
