@@ -32,7 +32,7 @@ export default function SignIn() {
         <input type="password" className="form-control" value={password} onChange={e => setPassword(e.target.value)}/>
       </div>
       { errors }
-      <button className="btn btn-primary">Sign Up</button>
+      <button className="btn btn-primary">Sign In</button>
     </form>
   )
 }
