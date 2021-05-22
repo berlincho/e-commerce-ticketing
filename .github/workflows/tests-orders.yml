@@ -1,7 +1,10 @@
 name: tests-orders
 
 on:
-  pull_request
+  pull_request:
+    paths:
+      # trigger testing only from changes made to this service
+      - 'orders/**'
   
 jobs:
   build:
